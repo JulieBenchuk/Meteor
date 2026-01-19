@@ -1,11 +1,9 @@
 import React from 'react';
-import { Hello } from './Hello';
-import { Info } from './Info';
+import { GameBoard } from './GameBoard';
 
 export const App = () => (
-  <div>
-    <h1>Welcome to Meteor!</h1>
-    <Hello />
-    <Info />
+  <div style={{ padding: '20px' }}>
+    <h1>Tic-Tac-Toe</h1>
+    <GameBoard/>
   </div>
 );
