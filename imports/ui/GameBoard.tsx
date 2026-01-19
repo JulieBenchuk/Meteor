@@ -4,11 +4,18 @@ import { Games } from '../collections/Games';
 import { useSubscribe } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 
-export const GameBoard = () => {
-  useSubscribe('games');
-  const [gameId, setGameId] = useState<string | null>(null);
+interface GameBoardProps {
+  gameId?: string | null;
+}
+
+export const GameBoard = ({ gameId: propGameId }: GameBoardProps = {}) => {
+  const [gameId, setGameId] = useState<string | null>(propGameId || null);
 
   useEffect(() => {
+    if (propGameId) {
+      setGameId(propGameId);
+      return;
+    }
     if (gameId) return;
     
     Meteor.call('games.create', (error: any, result: string) => {
@@ -18,10 +25,14 @@ export const GameBoard = () => {
         setGameId(result);
       }
     });
-  }, [gameId]);
+  }, [gameId, propGameId]);
 
+  if (!gameId) {
+    return <div>Creating game...</div>;
+  }
+
+  useSubscribe('game', gameId);
   const game = useTracker(() => {
-    if (!gameId) return null;
     return Games.findOne({_id: gameId});
   });
 
@@ -39,13 +50,34 @@ export const GameBoard = () => {
   };
 
   if (!game) {
-    return <div>Loading...</div>;
+    return <div>Loading game...</div>;
   }
 
+  const creator = useTracker(() => {
+    if (!game.createdBy) return null;
+    return Meteor.users.findOne({ _id: game.createdBy });
+  });
+
   return (
-    <div
-      style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px', width: '300px' }}
-    >
+    <div>
+      <div style={{ marginBottom: '15px' }}>
+        {creator && (
+          <div style={{ marginBottom: '5px' }}>
+            <strong>Created by:</strong> {creator.emails?.[0]?.address || 'Unknown'}
+          </div>
+        )}
+        <div>
+          <strong>Current player:</strong> {game.currentPlayer}
+        </div>
+        {game.status === 'finished' && game.winner && (
+          <div style={{ marginTop: '5px', color: '#28a745', fontWeight: 'bold' }}>
+            Winner: {game.winner === 'draw' ? 'Draw!' : game.winner}
+          </div>
+        )}
+      </div>
+      <div
+        style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px', width: '300px' }}
+      >
       {game.board.map((cell, index) => (
         <button
           key={index}
@@ -62,6 +94,7 @@ export const GameBoard = () => {
           {cell || ''}
         </button>
       ))}
+      </div>
     </div>
   );
 };

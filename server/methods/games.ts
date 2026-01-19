@@ -5,10 +5,15 @@ import { checkWinner } from '/imports/utils/gameLogic';
 
 Meteor.methods({
   async 'games.create'() {
+    if (!this.userId) {
+      throw new Meteor.Error('not-authorized', 'You must be logged in to create a game');
+    }
+
     const gameId = await Games.insertAsync({
       board: Array(9).fill(null),
       currentPlayer: 'X',
       status: 'waiting',
+      createdBy: this.userId,
     });
     return gameId;
   },

@@ -4,4 +4,5 @@ export interface Game {
   currentPlayer: 'X' | 'O';
   status: 'waiting' | 'playing' | 'finished';
   winner?: 'X' | 'O' | 'draw';
+  createdBy?: string;
 }

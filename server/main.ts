@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Link, LinksCollection } from '/imports/api/links';
 import '/imports/collections/Games';
-import { Games } from '/imports/collections/Games';
 import '/server/methods/games';
+import '/server/publications/games';
 
 async function insertLink({ title, url }: Pick<Link, 'title' | 'url'>) {
   await LinksCollection.insertAsync({ title, url, createdAt: new Date() });
@@ -37,9 +37,5 @@ Meteor.startup(async () => {
   // In order to be fetched in real-time to the clients
   Meteor.publish('links', function () {
     return LinksCollection.find();
-  });
-
-  Meteor.publish('games', function () {
-    return Games.find();
   });
 });
