@@ -16,7 +16,9 @@ export const GameBoard = () => {
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px', width: '300px' }}>
+    <div
+      style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px', width: '300px' }}
+    >
       {board.map((cell, index) => (
         <button
           key={index}
@@ -27,7 +29,7 @@ export const GameBoard = () => {
             fontSize: '24px',
             border: '1px solid #ccc',
             cursor: cell === null ? 'pointer' : 'not-allowed',
-            backgroundColor: cell === null ? 'white' : '#f0f0f0'
+            backgroundColor: cell === null ? 'white' : '#f0f0f0',
           }}
         >
           {cell || ''}
