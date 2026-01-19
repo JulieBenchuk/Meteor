@@ -1,25 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useTracker } from 'meteor/react-meteor-data';
+import { Games } from '../collections/Games';
+import { useSubscribe } from 'meteor/react-meteor-data';
+import { Meteor } from 'meteor/meteor';
 
 export const GameBoard = () => {
-  const [board, setBoard] = useState<(string | null)[]>(Array(9).fill(null));
-  const [currentPlayer, setCurrentPlayer] = useState<'X' | 'O'>('X');
+  useSubscribe('games');
+  const [gameId, setGameId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (gameId) return;
+    
+    Meteor.call('games.create', (error: any, result: string) => {
+      if (error) {
+        console.error('Error creating game:', error);
+      } else {
+        setGameId(result);
+      }
+    });
+  }, [gameId]);
+
+  const game = useTracker(() => {
+    if (!gameId) return null;
+    return Games.findOne({_id: gameId});
+  });
 
   const handleCellClick = (index: number) => {
-    if (board[index] !== null) {
+    if (!game || !game._id || game.board[index] !== null) {
       return;
     }
-
-    const newBoard = [...board];
-    newBoard[index] = currentPlayer;
-    setBoard(newBoard);
-    setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X');
+  
+    Meteor.call('games.makeMove', game._id, index, (error: any) => {
+      if (error) {
+        console.error('Error making move:', error);
+        alert(error.message || 'Failed to make move');
+      }
+    });
   };
+
+  if (!game) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div
       style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px', width: '300px' }}
     >
-      {board.map((cell, index) => (
+      {game.board.map((cell, index) => (
         <button
           key={index}
           onClick={() => handleCellClick(index)}
