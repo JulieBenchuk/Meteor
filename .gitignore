@@ -1,3 +1,10 @@
 node_modules/
 .meteor/
 LEARNING_PLAN.md
+build/
+dist/
+*.log
+.env
+.env.local
+.DS_Store
+coverage/

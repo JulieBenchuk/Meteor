@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: meteor-app
+    env: node
+    buildCommand: npm install -g meteor && meteor build --directory ./build
+    startCommand: cd build/bundle/programs/server && npm install && node ../../main.js
+    envVars:
+      - key: MONGO_URL
+        sync: false
+      - key: ROOT_URL
+        sync: false
+      - key: PORT
+        value: 10000

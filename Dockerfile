@@ -1,0 +1,31 @@
+FROM node:18-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    python3 \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl https://install.meteor.com/ | sh
+ENV PATH="/root/.meteor:$PATH"
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+
+RUN meteor build --directory /app/build
+
+WORKDIR /app/build/bundle/programs/server
+RUN npm install --production
+
+WORKDIR /app/build/bundle
+
+ENV NODE_ENV=production
+ENV PORT=3000
+
+EXPOSE 3000
+
+CMD ["node", "main.js"]
