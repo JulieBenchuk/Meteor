@@ -25,8 +25,7 @@ RUN npm install --production
 WORKDIR /app/build/bundle
 
 ENV NODE_ENV=production
-ENV PORT=3000
 
 EXPOSE 3000
 
-CMD ["node", "main.js"]
+CMD PORT=${PORT:-3000} node main.js
