@@ -97,5 +97,29 @@ Meteor.methods({
         losses,
         lastGame,
       };
-    }
+    },
+    async 'games.getLeaderboard'() {
+        const finishedGames = await Games.find({ 
+          status: 'finished',
+          winner: { $ne: 'draw' }
+        }).fetchAsync();
+        
+        const stats: Record<string, { userId: string; wins: number }> = {};
+        
+        for (const game of finishedGames) {
+          if (!game.createdBy || !game.winner) continue;
+          
+          if (!stats[game.createdBy]) {
+            stats[game.createdBy] = { userId: game.createdBy, wins: 0 };
+          }
+          
+          stats[game.createdBy].wins += 1;
+        }
+        
+        const leaderboard = Object.values(stats)
+          .sort((a, b) => b.wins - a.wins)
+          .slice(0, 10);
+        
+        return leaderboard;
+      }
 });

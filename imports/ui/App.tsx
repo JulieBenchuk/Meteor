@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { LoginForm } from './LoginForm';
 import { UserInfo } from './UserInfo';
 import { GameList } from './GameList';
+import { Leaderboard } from './Leaderboard';
 
 export const App = () => {
   const user = useTracker(() => Meteor.user());
@@ -26,6 +27,7 @@ export const App = () => {
     <div style={{ padding: '20px' }}>
       <h1>Tic-Tac-Toe</h1>
       <UserInfo />
+      <Leaderboard />
       <GameList />
     </div>
   );

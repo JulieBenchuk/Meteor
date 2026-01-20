@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Games } from '/imports/collections/Games';
 
-Meteor.startup(() => {
+Meteor.startup(async () => {
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  Games.remove({ createdAt: { $lt: oneDayAgo } });
+  await Games.removeAsync({ createdAt: { $lt: oneDayAgo } });
   
-  Meteor.setInterval(() => {
+  Meteor.setInterval(async () => {
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    Games.remove({ createdAt: { $lt: oneDayAgo } });
+    await Games.removeAsync({ createdAt: { $lt: oneDayAgo } });
   }, 6 * 60 * 60 * 1000);
 });

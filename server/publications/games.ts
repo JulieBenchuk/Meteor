@@ -20,3 +20,22 @@ Meteor.publish('game', function (gameId: string) {
   }
   return Games.find({ _id: gameId });
 });
+
+Meteor.publish('leaderboardUsers', function () {
+  const finishedGames = Games.find({ 
+    status: 'finished',
+    winner: { $ne: 'draw' }
+  });
+  
+  const userIds = new Set<string>();
+  finishedGames.forEach((game) => {
+    if (game.createdBy) {
+      userIds.add(game.createdBy);
+    }
+  });
+  
+  return Meteor.users.find(
+    { _id: { $in: Array.from(userIds) } },
+    { fields: { emails: 1 } }
+  );
+});
