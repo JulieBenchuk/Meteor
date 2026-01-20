@@ -1,5 +1,5 @@
 node_modules/
-.meteor/
+.meteor/local/
 LEARNING_PLAN.md
 build/
 dist/
