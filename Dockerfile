@@ -28,4 +28,4 @@ ENV NODE_ENV=production
 
 EXPOSE 3000
 
-CMD PORT=${PORT:-3000} node main.js
+CMD ["node", "main.js"]
