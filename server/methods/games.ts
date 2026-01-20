@@ -14,6 +14,7 @@ Meteor.methods({
       currentPlayer: 'X',
       status: 'waiting',
       createdBy: this.userId,
+      createdAt: new Date(),
     });
     return gameId;
   },
@@ -57,8 +58,44 @@ Meteor.methods({
       updateData.status = 'playing';
     }
 
-    await Games.updateAsync({ _id: gameId }, { $set: updateData });
+    await Games.updateAsync({ _id: gameId }, { 
+        $set: { 
+          board: newBoard, 
+          currentPlayer: nextPlayer 
+        } 
+      });
 
     return await Games.findOneAsync({ _id: gameId });
   },
+  async 'games.getStats'() {
+    if (!this.userId) {
+        throw new Meteor.Error('not-authorized', 'You must be logged in to create a game');
+      }
+      const userId = this.userId;
+      const totalGames = await Games.find({ createdBy: userId }).countAsync();
+
+      const wins = await Games.find({ 
+        createdBy: userId, 
+        status: 'finished', 
+        winner: 'X'
+      }).countAsync();
+
+      const losses = await Games.find({ 
+        createdBy: userId, 
+        status: 'finished', 
+        winner: { $ne: 'X' }
+      }).countAsync();
+
+      const lastGame = await Games.findOneAsync(
+        { createdBy: userId },
+        { sort: { createdAt: -1 } }
+      );
+
+      return {
+        totalGames,
+        wins,
+        losses,
+        lastGame,
+      };
+    }
 });

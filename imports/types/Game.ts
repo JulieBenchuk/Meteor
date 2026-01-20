@@ -5,4 +5,5 @@ export interface Game {
   status: 'waiting' | 'playing' | 'finished';
   winner?: 'X' | 'O' | 'draw';
   createdBy?: string;
+  createdAt?: Date;
 }

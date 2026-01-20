@@ -3,6 +3,8 @@ import { Link, LinksCollection } from '/imports/api/links';
 import '/imports/collections/Games';
 import '/server/methods/games';
 import '/server/publications/games';
+import '/server/startup/indexes';
+import '/server/startup/cleanup';
 
 async function insertLink({ title, url }: Pick<Link, 'title' | 'url'>) {
   await LinksCollection.insertAsync({ title, url, createdAt: new Date() });
