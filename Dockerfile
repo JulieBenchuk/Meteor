@@ -16,6 +16,7 @@ RUN npm ci
 
 COPY . .
 
+ENV METEOR_ALLOW_SUPERUSER=1
 RUN meteor build --directory /app/build
 
 WORKDIR /app/build/bundle/programs/server
